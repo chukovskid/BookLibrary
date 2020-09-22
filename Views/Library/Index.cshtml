@@ -1,0 +1,98 @@
+﻿@model IEnumerable<PDFUpload.Models.Book>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Books</h2>
+
+@*<table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var book in Model)
+            {
+                <tr>
+                    <td>@Html.ActionLink(book.Title, "PerviewPdfBook", "Library", new { id = book.Id }, null)</td>
+                    <td>@book.Author</td>
+                </tr>
+            }
+        </tbody>
+    </table>*@
+
+
+
+
+<table id="books" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Book</th>
+            <th>Author</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+    <button class="btn brn-primary js-delete"> Delete</button>
+
+</table>
+
+
+
+
+
+@section scripts
+        {
+    <script src="~/datatables/js/jquery.dataTables.js"></script>
+    <script src="~/bootbox.js/bootbox.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#books").DataTable({
+                ajax: {
+                    url: "/api/books", // 79
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "title",
+                        render: function (data, type, book) {
+                            return "<a href='api/books/" + book.id + "'>" + book.title + "</a>";
+                        }
+                    },
+                    {
+                        data: "author"
+                    },
+                    {
+                        data: "id", //  ovde ke vratam kopce, a ova "id" mi treba za da go pisam vo url
+                        render: function (data) {
+                            return "<button class='btn btn-danger js-delete'  data-book-id=" + data + ">Delete</button>"; // Ova  ke go klikne kopceto, napraveno so jQery dole
+                        }
+                    }
+                ]
+            });
+
+
+
+            $("#books").on("click", ".js-delete", function () {
+                var button = $(this);
+                bootbox.confirm("Are you sure?", function (result) { // 77
+                    if (result) {
+                        $.ajax({
+                            url: "/api/books/" + button.attr("data-book-id"), // idi na linkov // kopcevo e vrzano so toa gore koga ke se klikne
+                            method: "DELETE",
+                            success: function () { // do tuka go brises od DB, Nadole e za FrontVoMomentot
+                                button.parents("tr").remove();
+                            }
+                        })
+                    }
+                })
+            });
+        })
+
+    </script>
+}
+

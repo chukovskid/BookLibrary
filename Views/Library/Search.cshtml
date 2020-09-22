@@ -1,0 +1,273 @@
+﻿
+@{
+    ViewData["Title"] = "Search";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Search</h1>
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/css/select2.min.css" integrity="sha512-xrbX64SIXOxo5cMQEDUQ3UyKsCreOEq1Im90z3B7KPoxLJ2ol/tCT0aBhuIzASfmBVdODioUdUPbt5EDEXmD9g==" crossorigin="anonymous" />
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+<script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+
+
+@*<form asp-controller="Books" asp-action="createBook" data-ajax="true" data-ajax-method="POST" typeof="application/json;">
+*@
+
+@using (Html.BeginForm("Create", "Library", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+
+
+
+
+    <div class="form-group">
+        <label>AddTags (Select2)</label> <br />
+        <select name="tags[]" multiple="multiple" id="tags" class="tags" style="width:300px;">
+        </select> <br />
+        <input id="new-car" type="text" />
+        <button type="button" id="btn-add-car">Set state value</button>
+    </div>
+
+    <btn id="tagsButton" class="btn btn-primary">Stisni</btn>
+
+
+
+}
+
+
+@section scripts
+{
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js" integrity="sha512-A5lKSoM6p2axvCtNMT5fvLyjuAavxGlfC1YU0Wn8NzWixwutPUCYfymJQLORJ4YFoKIEAqKCN8+MpQQwzi2bjg==" crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+
+
+
+    $(document).ready(function () {
+        var vmb = {
+
+            //bookTags: []
+        }
+        var bookTags = [];
+        var izbraniTagovi;
+
+        //////////////// ne pipaj dole
+        $('#tags').select2({
+            ajax: {
+                //url: '/api/customers?query=%QUERY',
+                //  wildcard: '%QUERY'
+
+                url: '/api/books/allTags',
+                dataType: "json", // mozda treba jsonP ama proveri
+                data: function (params) {
+                    //zborovi = params.term; // input data
+                    //console.log("ti vnese  :  " + zborovi) // console.log
+                    return {
+                        q: params.term // search term
+                    };
+                },
+                processResults: function (data) {
+                    var tagList;
+                    tagList = [];
+                    $.each(data, function (idx, item) {
+                        tagList.push({
+                            'id': item.id,
+                            'text': item.tagName
+                        });
+                    });
+                    return { results: tagList };
+                },
+            }
+        });
+
+        /// Nov Tag
+        $("#btn-add-car").on("click", function () {
+            var newStateVal = $("#new-car").val();
+            // Set the value, creating a new option if necessary
+            if ($("#tags").find("option[value=" + newStateVal + "]").length) {
+                $("#tags").val(newStateVal).trigger("change");
+            } else {
+                // Create the DOM option that is pre-selected by default
+                var newState = new Option(newStateVal, newStateVal, true, true);
+                // Append it to the select
+                $("#tags").append(newState).trigger('change');
+            }
+        });
+
+
+
+
+
+        ///////// newBook !!!!!!!
+        $("#tagsButton").click(function () {
+
+            vmb.title = $("#title").val();
+            vmb.pages = $("#pages").val();
+            vmb.author = $("#author").val();
+
+
+
+
+            izbraniTagovi = $('#tags').select2('data');
+            $.each(izbraniTagovi, function (idx, item) {
+                bookTags.push(
+                    {
+                        "id": item.id,
+                        //"tagName": item.text
+                    }
+                );
+            });
+
+            console.log(bookTags);
+            var sendBookTags = JSON.stringify(bookTags);
+
+
+            $.ajax({
+                processData: false,
+                //contentType: false
+                contentType: "application/json; charset=utf-8",
+                type: "POST",
+                url: "/api/Search/FindBooks", // ovde sakam da pratam vm model od ViewBookModel
+                dataType: "json",
+                data: JSON.stringify(bookTags),
+                //data: {'myArray' : bookTags},
+                //data: bookTags,
+                error: function (e) {
+                    console.log(e);
+                },
+
+
+            });
+
+
+
+            //return false;
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //// "U" for selected tagList
+        $(window).keydown(function (event) { // U koga ke stisnes ke gi isprinta site IZBRANI tagovi
+            if (event.keyCode == 85) {
+                izbraniTagovi = $('#tags').select2('data');
+                console.log("ti gi izbra slednive tagovi: ")
+                console.log(izbraniTagovi)
+            }
+        });
+
+
+        //////// Enter disable
+        $(window).keydown(function (event) { // za Enter da ne ja submitne formata
+            if (event.keyCode == 13) {
+                event.preventDefault();
+                return false;
+            }
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //////////// Autocomplite
+        var tagList = new Array();
+        var vm = {};
+        $("#tags").autocomplete({
+            source: function (request, response) {
+                console.log(request.term)
+
+                $.ajax({
+                    url: '/api/books/allTags', // @*@Url.Action("Search")*@
+                    dataType: "json",
+                    data: {
+                        term: request.term
+                    },
+                    success: function (data) {
+                        response($.map(data, function (Tag) {
+                            return {
+                                label: Tag.tagName,
+                                value: Tag.id
+                            };
+                        }));
+                    }
+                });
+            },
+            minLength: 2,
+            select: function (event, ui) {
+                $("#tags").empty();
+
+                tagList.push(ui.item.value);
+
+                $("#taglist").append("<li>" + ui.item.label + "<li>")
+                console.log("Selected: " + ui.item.value + " aka " + ui.item.label);
+                console.log("Selected: " + tagList);
+                if (ui.item.value == null || ui.item.value == 0) { // ako nema Id odnosno ne postoi, kreiraj nov Tag
+                    console.log("stigna zborceto");
+                    //$.ajax({
+                    //    url: "/api/"
+                    //})
+
+
+                }
+            }
+        })
+    });
+    </script>
+}
+
+
+
