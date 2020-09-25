@@ -1,4 +1,5 @@
 ﻿using BookLibrary.Models;
+using BookLibrary.ViewModels;
 using PDFUpload.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ namespace PDFUpload.Repos
         Task<Book> GetNewBook();
         Task<IEnumerable<Tag>> TagsForNewBook();
         Task<IEnumerable<BookTags>> FoundBookTags(List<int> SelectedTags);
-        Task<IEnumerable<Book>> FoundBooks(IEnumerable<int> TagIds);
+        Task<IEnumerable<Book>> FoundBooks(IEnumerable<ViewTagModel> bookTags);
 
 
 

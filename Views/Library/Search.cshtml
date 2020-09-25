@@ -35,6 +35,19 @@
 
 }
 
+<table id="searchTable" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Book</th>
+            <th>Author</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+    <button class="btn brn-primary js-delete"> Delete</button>
+
+</table>
 
 @section scripts
 {
@@ -43,16 +56,15 @@
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js" integrity="sha512-A5lKSoM6p2axvCtNMT5fvLyjuAavxGlfC1YU0Wn8NzWixwutPUCYfymJQLORJ4YFoKIEAqKCN8+MpQQwzi2bjg==" crossorigin="anonymous"></script>
+    <script src="~/datatables/js/jquery.dataTables.js"></script>
+    <script src="~/bootbox.js/bootbox.min.js"></script>
 
     <script type="text/javascript">
 
 
 
     $(document).ready(function () {
-        var vmb = {
 
-            //bookTags: []
-        }
         var bookTags = [];
         var izbraniTagovi;
 
@@ -106,13 +118,6 @@
         ///////// newBook !!!!!!!
         $("#tagsButton").click(function () {
 
-            vmb.title = $("#title").val();
-            vmb.pages = $("#pages").val();
-            vmb.author = $("#author").val();
-
-
-
-
             izbraniTagovi = $('#tags').select2('data');
             $.each(izbraniTagovi, function (idx, item) {
                 bookTags.push(
@@ -122,46 +127,68 @@
                     }
                 );
             });
-
             console.log(bookTags);
+
+            //bookTags = uniqBy(bookTags, it => it.id);
             var sendBookTags = JSON.stringify(bookTags);
 
 
-            $.ajax({
-                processData: false,
-                //contentType: false
-                contentType: "application/json; charset=utf-8",
-                type: "POST",
-                url: "/api/Search/FindBooks", // ovde sakam da pratam vm model od ViewBookModel
-                dataType: "json",
-                data: JSON.stringify(bookTags),
-                //data: {'myArray' : bookTags},
-                //data: bookTags,
-                error: function (e) {
-                    console.log(e);
-                },
+                $.ajax({
+                    processData: false,
+                    //contentType: false
+                    contentType: "application/json; charset=utf-8",
+                    type: "POST",
+                    url: "/api/Search", // ovde sakam da pratam vm model od ViewBookModel
+                    dataType: "json",
+                    data: JSON.stringify(bookTags),
+                    success: function (response) {
+                        var trHTML = '';
+                        $.each(response, function (i, item) {
+                            trHTML += '<tr class="bookstr"><td>' + item.title + '</td><td>' + item.author + '</td><td>' + item.id + '</td></tr>';
+                        });
+                        $(".bookstr").remove();
+                        $('#searchTable').append(trHTML);
+                        bookTags = [];
+                    },
 
-
-            });
-
-
-
-            //return false;
+                    error: function (e) {
+                        console.log(e);
+                    },
+                });
         });
 
 
+         // filter if duplicate (long code but best performance)
+            function uniq_fast(a) {
+                var seen = {};
+                var out = [];
+                var len = a.length;
+                var j = 0;
+                for (var i = 0; i < len; i++) {
+                    var item = a[i];
+                    if (seen[item] !== 0) {
+                        seen[item] = 0;
+                        out[j++] = item;
+                    }
+                }
+                return out;
+            }
 
 
 
+            function uniq(a) {
+                return a.sort().filter(function(item, pos, ary) {
+                    return !pos || item != ary[pos - 1];
+                });
+            }
 
-
-
-
-
-
-
-
-
+        function uniqBy(a, key) {
+    let seen = new Set();
+    return a.filter(item => {
+        let k = key(item);
+        return seen.has(k) ? false : seen.add(k);
+    });
+}
 
 
 

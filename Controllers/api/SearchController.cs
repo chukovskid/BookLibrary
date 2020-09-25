@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using PDFUpload.Dtos;
-using PDFUpload.Models;
+﻿using BookLibrary.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 using PDFUpload.Repos;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -23,7 +22,90 @@ namespace BookLibrary.Controllers.api
 
 
 
+
         // Create      
+        // POST     /api/Search/ProbaSearch
+        [HttpPost]
+        public async Task<IActionResult> Search(IEnumerable<ViewTagModel> bookTags)
+        {
+
+            //int id;
+            //var tagIds = new List<int>();
+
+            //foreach (var tag in bookTags)
+            //{
+            //    int.TryParse(tag.id, out id);
+            //    tagIds.Add(id);
+            //}
+
+            ////tagIds.AddRange(bookTags);
+            ////int[] int_arr = { 60487999, 60489222 };
+
+
+
+            //var returnBooks = new List<Book>();
+
+            //var Books = await _repo.FoundBooks(tagIds);
+
+            //Books.Select(b => b.Tag)
+
+            //foreach (var searchTag in tagIds)
+            //{
+            //    foreach (var book in Books)
+            //    {
+            //        foreach (var booktag in book.BookTags)
+            //        {
+            //            if (booktag.TagId == searchTag)
+            //            {
+            //                returnBooks.Add(book);
+            //                break;
+
+            //            }
+
+            //        }
+
+            //    }
+            //}
+
+            //var dtoBooks = new List<BookListDto>();
+
+            //foreach (var book in returnBooks)
+            //{
+            //    var newBookDto = new BookListDto()
+            //    {
+            //        Id = book.Id,
+            //        Pages = book.Pages,
+            //        Author = book.Author,
+            //        Title = book.Title,
+
+            //    };
+            //    dtoBooks.Add(newBookDto);
+            //}
+
+
+            //List<BookListDto> noDuplicateDtoBookTags = dtoBooks.Distinct().ToList();
+
+
+            var Books = await _repo.FoundBooks(bookTags);
+
+
+            return Ok(Books);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // Create       /// BRISI
         // POST     /api/Search/FindBooks
         [HttpPost("FindBooks")]
         public async Task<IActionResult> FindBooks(List<int> SelectedTags)
@@ -59,52 +141,6 @@ namespace BookLibrary.Controllers.api
 
 
 
-        // Create      
-        // POST     /api/Search/ProbaSearch
-        [HttpGet("ProbaSearch")]
-        public async Task<IActionResult> ProbaSearch()
-        {
-            int[] int_arr = { 60487999, 60489222 };
-            var tagIds = new List<int>();
-            tagIds.AddRange(int_arr);
-
-            var returnBooks = new List<Book>();
-
-            var Books = await _repo.FoundBooks(tagIds);
-            foreach (var searchTag in tagIds)
-            {
-                foreach (var book in Books)
-                {
-                    foreach (var booktag in book.BookTags)
-                    {
-                        if (booktag.TagId == searchTag)
-                        {
-                            returnBooks.Add(book);
-                        }
-                    }
-                    break;
-                }
-            }
-
-            var dtoBooks = new List<BookListDto>();
-
-            foreach (var book in returnBooks)
-            {
-                var newBookDto = new BookListDto()
-                {
-                    Id = book.Id,
-                    Pages = book.Pages,
-                    Title = book.Title,
-
-                };
-                dtoBooks.Add(newBookDto);
-            }
-
-
-
-
-            return Ok(dtoBooks);
-        }
 
     }
 }

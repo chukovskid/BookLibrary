@@ -14,7 +14,7 @@
 @*<form asp-controller="Books" asp-action="createBook" data-ajax="true" data-ajax-method="POST" typeof="application/json;">
 *@
 
-@using (Html.BeginForm("Create", "Library", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("Create", "Library", FormMethod.Post, new { enctype = "multipart/form-data", id = "myForm" }))
 {
 
     <div class="form-group">
@@ -39,11 +39,12 @@
         @*<input id="file" type="file">*@
 
         <input asp-for="BookFile" type="file">
-        <input type="submit" value="Upload" id="submit" />
+        <input type="submit" value="Upload" id="submit" style="display: none;" />
     </div>
-
+    <br />
+    <br />
     <div class="form-group">
-        <label>AddTags (Select2)</label> <br />
+        <label>AddTags </label> <br />
         <select name="tags[]" multiple="multiple" id="tags" class="tags" style="width:300px;">
         </select> <br />
         <input id="new-car" type="text" />
@@ -51,59 +52,6 @@
     </div>
 
     <btn id="tagsButton" class="btn btn-primary">Stisni</btn>
-
-
-
-
-    @*<div class="form-group">
-        @Html.LabelFor(m => m.Tags)*@
-    @*@Html.DropDownListFor(m => m.TagStringIds, new SelectList(Model.Tags, "Id", "TagName"), "Select TagName", new { @class = "form-control" })*@
-    @*@Html.DropDownListFor(x => x.SelectedTag, Model.Tags.Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.TagName }), new { @class = "form-control chosen-select", id = "selectedTags" })*@
-
-    @*@Html.ListBoxFor(model => model.TagModels, new MultiSelectList(Model.Tags, "Id", "TagName"), new { @class = "chzn-select form-control", id = "selectedTags", multiple = "multiple" })*@
-
-    @*@Html.ListBoxFor(model => model.TagStringArr, new MultiSelectList(Model.Tags, "Id", "TagName", Model.TagStringArr.Select(x => x.Id)), new { @class = "form-control features-segments select2-multiselect-checkbox", multiple = "multiple" })
-
-            @Html.ValidationMessageFor(m => m.Tags)
-        </div>*@
-
-    @*<div class="form-group">
-            @Html.LabelFor(m => m.Title)
-            <input type="text" id="title" value="Title1">
-            @Html.ValidationMessageFor(m => m.Title)
-        </div>
-
-
-        <div class="form-group">
-            @Html.LabelFor(m => m.Author)
-            <input type="text" id="author" value="Author1">
-            @Html.ValidationMessageFor(m => m.Author)
-        </div>
-
-
-        <div class="form-group">
-            @Html.LabelFor(m => m.Pages)
-            <input type="number" id="pages" value="666">
-            @Html.ValidationMessageFor(m => m.Pages)
-        </div>*@
-
-
-    @*<div class="form-group">
-            <label>Autocomplite</label> <br />
-            <input type="text" multiple id="tags" />
-        </div>*@
-    @*<ul id="taglist" class="list-group">  </ul>*@
-
-
-
-    @*<div class="form-group">
-    *@
-    @*@Html.DropDownListFor(x => x.TagModel, new SelectList(Model.TagModel, "id", "tagName"), htmlAttributes: new { @class = "form-control", id = "" })*@
-    @*@Html.DropDownListFor(model => model.TagModel, new SelectList, new { @name = "CustomerType", @id = "CustomerTypeID", @class = "browser-default custom-select", required = "required" })*@
-
-    @*
-        </div>*@
-
 
 
 }
@@ -118,400 +66,130 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js" integrity="sha512-A5lKSoM6p2axvCtNMT5fvLyjuAavxGlfC1YU0Wn8NzWixwutPUCYfymJQLORJ4YFoKIEAqKCN8+MpQQwzi2bjg==" crossorigin="anonymous"></script>
 
     <script type="text/javascript">
-
-
-
-    $(document).ready(function () {
-        var vmb = {
-
-            //bookTags: []
-        }
-        var bookTags = [];
-        var izbraniTagovi;
-
-        //////////////// ne pipaj dole
-        $('#tags').select2({
-            ajax: {
-                //url: '/api/customers?query=%QUERY',
-                //  wildcard: '%QUERY'
-
-                url: '/api/books/allTags',
-                dataType: "json", // mozda treba jsonP ama proveri
-                data: function (params) {
-                    //zborovi = params.term; // input data
-                    //console.log("ti vnese  :  " + zborovi) // console.log
-                    return {
-                        q: params.term // search term
-                    };
-                },
-                processResults: function (data) {
-                    var tagList;
-                    tagList = [];
-                    $.each(data, function (idx, item) {
-                        tagList.push({
-                            'id': item.id,
-                            'text': item.tagName
-                        });
-                    });
-                    return { results: tagList };
-                },
+        $(document).ready(function () {
+            var vmb = {
+                //bookTags: []
             }
-        });
-
-        /// Nov Tag
-        $("#btn-add-car").on("click", function () {
-            var newStateVal = $("#new-car").val();
-            // Set the value, creating a new option if necessary
-            if ($("#tags").find("option[value=" + newStateVal + "]").length) {
-                $("#tags").val(newStateVal).trigger("change");
-            } else {
-                // Create the DOM option that is pre-selected by default
-                var newState = new Option(newStateVal, newStateVal, true, true);
-                // Append it to the select
-                $("#tags").append(newState).trigger('change');
-            }
-        });
-
-
-
-        //$("#tagsButton").click(function () {
-        //    //$("#submit").click;ss
-        //    //setTimeout(() => { $("#tagsButton").click; }, 400);
-
-        //})
-
-
-
-        ///////// newBook !!!!!!!
-        $("#tagsButton").click(function () {
-
-            vmb.title = $("#title").val();
-            vmb.pages = $("#pages").val();
-            vmb.author = $("#author").val();
-
-
-
-
-            izbraniTagovi = $('#tags').select2('data');
-            $.each(izbraniTagovi, function (idx, item) {
-                bookTags.push(
-                    {
-                        "id": item.id,
-                        "tagName": item.text
-                    }
-                );
-            });
-
-            console.log(bookTags);
-            var sendBookTags = JSON.stringify(bookTags);
-
-
-            $.ajax({
-                processData: false,
-                //contentType: false
-                contentType: "application/json; charset=utf-8",
-                type: "POST",
-                url: "/api/Books/newBookTags", // ovde sakam da pratam vm model od ViewBookModel
-                dataType: "json",
-                data: JSON.stringify(bookTags),
-                //data: {'myArray' : bookTags},
-                //data: bookTags,
-                error: function (e) {
-                    console.log(e);
-                },
-
-
-                  //$("#submit").click;ss
-                  //setTimeout(() => { $("#tagsButton").click; }, 400);
-            });
-
-
-
-
-            //var fileSelect = document.getElementById('file');
-            //var files = fileSelect.files;
-            //var formData = new FormData();
-
-            //// Loop through each of the selected files.
-            // for (var i = 0; i < files.length; i++) {
-            //   var file = files[i];
-
-            //   //// Check the file type.
-            //   //if (!file.type.match('image.*')) {  // go komentiram bidejki pretpostavuvam e od tip na pdf bez da Proveram
-            //   //  continue;
-            //   //}
-
-            //   // Add the file to the request.
-            //  formData.append('pdfs[]', file);
-            // }
-
-            //                                 var fd = new FormData();
-            //                                    var files = $('#file')[0].files[0];
-            //                                  fd.append('file', files);
-
-
-
-            //                            //vmb.bookFile = fd;
-
-
-
-
-            //      console.log(vmb)
-
-            //$.ajax({
-            //        type: "POST",
-            //        url: "/api/Books/createBook", // ovde sakam da pratam vm model od ViewBookModel
-            //        dataType: "json",
-            //    data: JSON.stringify(vmb),
-            //    processData: false,
-            //        contentType: false
-            //        //contentType: "application/json; charset=utf-8",
-            //    });
-
-
-
-
-
-
-
-
-            //var xhr = new XMLHttpRequest();
-            //   xhr.open('POST', '/api/Books/createBook', true);
-            //      xhr.onload = function () {
-            //          if (xhr.status === 200) {
-            //            // File(s) uploaded.
-            //            uploadButton.innerHTML = 'Upload';
-            //          } else {
-            //            alert('An error occurred!');
-            //          }
-            //      };
-
-
-            //          xhr.send(formData);
-
-
-
-
-
-
-            //var fileList = document.getElementById("file").files;     //// ova e za od File vo Byte[]
-            //   var fileReader = new FileReader();
-            //   if (fileReader && fileList && fileList.length) {
-            //      fileReader.readAsArrayBuffer(fileList[0]);
-            //      fileReader.onload = function () {
-            //          vmb.byteBook = fileReader.result;
-
-
-
-
-            //  if (!("TextDecoder" in window))
-            //  alert("Sorry, this browser does not support TextDecoder...");
-
-            //var enc = new TextDecoder("utf-8");
-            //var arr = new Uint8Array(vmb.byteBook);
-            //console.log(enc.decode(arr));
-            //  vmb.filePathToBook = enc.decode(arr)
-
-
-            //          console.log(vmb)
-
-            //                  $.ajax({
-            //                type: "POST",
-            //                url: "/api/Books/createBook", // ovde sakam da pratam vm model od ViewBookModel
-            //                dataType: "json",
-            //                data: JSON.stringify(vmb),
-            //                contentType: "application/json; charset=utf-8",
-            //            });
-
-            //      };
-            //}
-            //console.log("nadvor")
-            //console.log(vmb.byteBook)
-
-            //  var result = "";
-            //  for (var i = 0; i < vmb.byteBook.length; i++) {
-            //    result += String.fromCharCode(parseInt(fileReader.result[i], 2));
-            //  }
-            //vmb.FilePathToBook = result;
-
-
-
-
-            // var reader = new FileReader();
-            //reader.onload = function () {
-
-
-            //    array = new Uint8Array($("#author").val),
-            //        binaryString = String.fromCharCode.apply(null, array);
-            //    vmb.ByteBook = binaryString
-            //    console.log(binaryString);
-            //}
-
-            //vmb.FilePathToBook = document.getElementById("uploadFile").value = this.value;
-
-            //vmb.FilePathToBook = document.getElementById("file").files[0].name;
-
-            //var file = new FormData($('#file')[0])
-
-
-            //var $file = document.getElementById('file'),
-            //    $formData = new FormData();
-
-            //if ($file.files.length > 0) {
-            //   for (var i = 0; i < $file.files.length; i++) {
-            //      $formData.append('bookFile' + i, $file.files[i]);
-            //   }
-            //}
-            //var file = document.getElementById('file'),
-            //formData = new FormData();
-            //formData.append("bookFile", file);
-
-
-
-            //vmb.FilePathToBook =  $("#file").name();
-
-
-
-            //var fd = new Object();  // ne uspea poradi append
-            // fd.append('title', vmb.title);
-            // fd.append('pages', vmb.pages);
-
-
-
-
-
-
-            //// ovie izbraniTagovi sakam da idat vo bookTags kade ke se kreiraat novite i zaedno so starite ke gi asociram so novava kniga (mozda ke uspee asinhrono)
-
-
-
-
-
-
-
-
-            //$("#submit").click();
-            //return false;
-        });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        //// "U" for selected tagList
-        $(window).keydown(function (event) { // U koga ke stisnes ke gi isprinta site IZBRANI tagovi
-            if (event.keyCode == 85) {
-                izbraniTagovi = $('#tags').select2('data');
-                console.log("ti gi izbra slednive tagovi: ")
-                console.log(izbraniTagovi)
-            }
-        });
-
-
-        //////// Enter disable
-        $(window).keydown(function (event) { // za Enter da ne ja submitne formata
-            if (event.keyCode == 13) {
-                event.preventDefault();
-                return false;
-            }
-        });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        //////////// Autocomplite
-        var tagList = new Array();
-        var vm = {};
-        $("#tags").autocomplete({
-            source: function (request, response) {
-                console.log(request.term)
-
-                $.ajax({
-                    url: '/api/books/allTags', // @*@Url.Action("Search")*@
-                    dataType: "json",
-                    data: {
-                        term: request.term
+            var bookTags = [];
+            var izbraniTagovi;
+            //////////////// ne pipaj dole
+            $('#tags').select2({
+                ajax: {
+                    //url: '/api/customers?query=%QUERY',
+                    //  wildcard: '%QUERY'
+                    url: '/api/books/allTags',
+                    dataType: "json", // mozda treba jsonP ama proveri
+                    data: function (params) {
+                        //zborovi = params.term; // input data
+                        //console.log("ti vnese  :  " + zborovi) // console.log
+                        return {
+                            q: params.term // search term
+                        };
                     },
-                    success: function (data) {
-                        response($.map(data, function (Tag) {
-                            return {
-                                label: Tag.tagName,
-                                value: Tag.id
-                            };
-                        }));
-                    }
-                });
-            },
-            minLength: 2,
-            select: function (event, ui) {
-                $("#tags").empty();
-
-                tagList.push(ui.item.value);
-
-                $("#taglist").append("<li>" + ui.item.label + "<li>")
-                console.log("Selected: " + ui.item.value + " aka " + ui.item.label);
-                console.log("Selected: " + tagList);
-                if (ui.item.value == null || ui.item.value == 0) { // ako nema Id odnosno ne postoi, kreiraj nov Tag
-                    console.log("stigna zborceto");
-                    //$.ajax({
-                    //    url: "/api/"
-                    //})
-
-
+                    processResults: function (data) {
+                        var tagList;
+                        tagList = [];
+                        $.each(data, function (idx, item) {
+                            tagList.push({
+                                'id': item.id,
+                                'text': item.tagName
+                            });
+                        });
+                        return { results: tagList };
+                    },
                 }
+            });
+
+
+            /// Nov Tag
+            $("#btn-add-car").on("click", function () {
+                var newStateVal = $("#new-car").val();
+                // Set the value, creating a new option if necessary
+                if ($("#tags").find("option[value=" + newStateVal + "]").length) {
+                    $("#tags").val(newStateVal).trigger("change");
+                } else {
+                    // Create the DOM option that is pre-selected by default
+                    var newState = new Option(newStateVal, newStateVal, true, true);
+                    // Append it to the select
+                    $("#tags").append(newState).trigger('change');
+                }
+            });
+
+
+
+            ///////// newBook !!!!!!!
+            $("#tagsButton").click(function () {
+                vmb.title = $("#title").val();
+                vmb.pages = $("#pages").val();
+                vmb.author = $("#author").val();
+                izbraniTagovi = uniq_fast($('#tags').select2('data'));
+
+                $.each(izbraniTagovi, function (idx, item) {
+                    bookTags.push(
+                        {
+                            "id": item.id,
+                            "tagName": item.text
+                        }
+                    );
+                });
+                console.log(bookTags);
+                var sendBookTags = JSON.stringify(bookTags);
+                $.ajax({
+                    processData: false,
+                    //contentType: false
+                    contentType: "application/json; charset=utf-8",
+                    type: "POST",
+                    url: "/api/Books/newBookTags", // ovde sakam da pratam vm model od ViewBookModel
+                    //dataType: "json",
+                    data: JSON.stringify(bookTags),
+                    success: function () {
+                        $("#submit").click();
+                    },
+                    error: function (e) {
+                        console.log(e);
+                    },
+                    //$("#submit").click;
+                    //setTimeout(() => { $("#tagsButton").click; }, 400);
+                });
+
+            });
+
+            // filter if duplicate (long code but best performance)
+            function uniq_fast(a) {
+                var seen = {};
+                var out = [];
+                var len = a.length;
+                var j = 0;
+                for (var i = 0; i < len; i++) {
+                    var item = a[i];
+                    if (seen[item] !== 1) {
+                        seen[item] = 1;
+                        out[j++] = item;
+                    }
+                }
+                return out;
             }
-        })
-    });
+
+            //// "U" for selected tagList
+            $(window).keydown(function (event) { // U koga ke stisnes ke gi isprinta site IZBRANI tagovi
+                if (event.keyCode == 85) {
+                    izbraniTagovi = $('#tags').select2('data');
+                    console.log("ti gi izbra slednive tagovi: ")
+                    console.log(izbraniTagovi)
+                }
+            });
+
+
+            //////// Enter disable
+            $(window).keydown(function (event) { // za Enter da ne ja submitne formata
+                if (event.keyCode == 13) {
+                    event.preventDefault();
+                    return false;
+                }
+            });
+
+
+
+        });
     </script>
 }
-
-

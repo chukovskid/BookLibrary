@@ -56,23 +56,23 @@
                     url: "/api/books", // 79
                     dataSrc: ""
                 },
-                columns: [
-                    {
-                        data: "title",
-                        render: function (data, type, book) {
-                            return "<a href='api/books/" + book.id + "'>" + book.title + "</a>";
+                    columns: [
+                        {
+                            data: "title",
+                            render: function (data, type, book) {
+                                return "<a href='api/books/" + book.id + "'>" + book.title + "</a>";
+                            }
+                        },
+                        {
+                            data: "author"
+                        },
+                        {
+                            data: "id", //  ovde ke vratam kopce, a ova "id" mi treba za da go pisam vo url
+                            render: function (data) {
+                                return "<button class='btn btn-danger js-delete'  data-book-id=" + data + ">Delete</button>"; // Ova  ke go klikne kopceto, napraveno so jQery dole
+                            }
                         }
-                    },
-                    {
-                        data: "author"
-                    },
-                    {
-                        data: "id", //  ovde ke vratam kopce, a ova "id" mi treba za da go pisam vo url
-                        render: function (data) {
-                            return "<button class='btn btn-danger js-delete'  data-book-id=" + data + ">Delete</button>"; // Ova  ke go klikne kopceto, napraveno so jQery dole
-                        }
-                    }
-                ]
+                    ]
             });
 
 

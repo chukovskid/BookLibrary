@@ -1,5 +1,6 @@
 ﻿using BookLibrary.Data;
 using BookLibrary.Models;
+using BookLibrary.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using PDFUpload.Models;
 using System;
@@ -99,37 +100,72 @@ namespace PDFUpload.Repos
 
 
 
-        public async Task<IEnumerable<Book>> FoundBooks(IEnumerable<int> TagIds)
+        public async Task<IEnumerable<Book>> FoundBooks(IEnumerable<ViewTagModel> bookTags)
         {
-            var id = 25560611;
-            //var result = _context.Tags
-            //      .Where(t => t.Id == id)
-            //      .SelectMany(t => t.Books)
-            //      .ToList();
+            int[] int_arr = { 38431220 };
+            int tag = 38431220;
 
-            //var Books = _context.Books.Select(o => new
+            int id;
+            var tagIds = new List<int>();
+            foreach (var bTag in bookTags)
+            {
+                int.TryParse(bTag.id, out id);
+                tagIds.Add(id);
+            }
+
+
+            //var Books = _context.Books
+            //   .Include(e => e.BookTags)
+            //       .ThenInclude(e => e.Tag);
+
+            //var linqBooks = await _context.Tags.Where(t => t.Id == 38431220).Books.Select(b => b.Id)
+            var Books = await _context.Books.ToListAsync();
+            var repoBookTags = await _context.BookTags.ToListAsync();
+
+            List<int> selectedTagIds = tagIds;
+            //List<int> selectedTagIds = new List<int>() { 38431220, 60489222 };
+            var query = from book in Books
+                        join booktag in repoBookTags
+                        on book.Id equals booktag.BookId
+                        join selectedId in selectedTagIds
+                        on booktag.TagId equals selectedId
+                        group book by book into bookgroup
+                        where bookgroup.Count() == selectedTagIds.Count
+                        select bookgroup.Key;
+
+            //////////////////////////////////////////
+            ////////////////////////////////////////// 
+            //////////////////////////////////////////
+            /////
+            var BooksToReturn = new List<ViewBookModel>();
+
+            //BooksToReturn = await _context.Books.Select(book => new ViewBookModel
             //{
-            //    o.Id,
-            //    Tags = o.BookTags.Select(ot => ot.Tag).ToList()
-            //}).ToList();
+            //    Id = book.Id,
+            //    Title = book.Title,
+            //    Author = book.Author,
+            //    Pages = book.Pages,
+            //    Tags = book.BookTags.Select(s => s.Tag)
+            //}).ToListAsync();
+            //////////////////////////////////////////
+            //////////////////////////////////////////
+            //////////////////////////////////////////
+
+            //var newBookTry = await BooksToReturn.Select(b => (b.Tags.Where(t => t.Id == tag)).ToList()
+
+
+            //BooksToReturn = BooksToReturn.Where(b=>b.Tags == )
+
+            //var ReturnBooks = await _context.Books.Where(b=> b.Tag.id == SearchTagId).ToListAsync()
+
+            //var teams = db.Teams.Select(team => new {
+            //    TeamName = team.Name,
+            //    PlayersOlder20 = team.PlayerTeams.Where(pt => pt.Player.Age > 20).Select(s => s.Player)
+            //});
 
 
 
-            //var Books =  _context.Books.Include(t => t.BookTags).ThenInclude(bt => bt.Tag)
-            //                    .FirstOrDefault(k => k.BookTags. == id);
-
-            //var bookList = Tag.BookTags.Select(bt => bt.Tag).ToList();
-
-
-
-
-            var Books = await _context.Books
-               .Include(e => e.BookTags)
-                   .ThenInclude(e => e.Tag)
-               .ToListAsync();
-
-
-
+            //var booksToReturn = await Books.Where(b => b.BookTags.Where(bt => bt.Tag.Id == tagid)
 
 
             //var result = _context.Books.Where(p => p.Tags.Any(s => s.Id == id)).ToList();
@@ -145,7 +181,7 @@ namespace PDFUpload.Repos
 
             //.Where(b => BookTags.All(bt => bt.BookId == b.Id)).ToListAsync(); 
 
-            return Books;
+            return query;
         }
     }
 }

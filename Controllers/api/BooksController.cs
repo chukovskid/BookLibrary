@@ -1,4 +1,4 @@
-﻿ using BookLibrary.Models;
+﻿using BookLibrary.Models;
 using BookLibrary.ViewModels;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,38 +29,7 @@ namespace PDFUpload.Controllers.api
         }
 
 
-        //api/books/searchin/4
-        [HttpGet("bytesearch/{id}")]
-        public async Task<IActionResult> SearchByByte(int id) //string filePath
-        {
-            var searchWord = "think";
-            var byteWord = Encoding.ASCII.GetBytes(searchWord);
 
-            var theBook = await _repo.GetBook(id);
-            var timesFound = Search(theBook.ByteBook, byteWord);
-
-            if (timesFound >= 1)
-            {
-                return Content("a word was found " + timesFound);
-            };
-
-
-
-            return Content("we didnt get a result");
-        }
-
-        int Search(byte[] src, byte[] pattern)
-        {
-            int c = src.Length - pattern.Length + 1;
-            int j;
-            for (int i = 0; i < c; i++)
-            {
-                if (src[i] != pattern[0]) continue;
-                for (j = pattern.Length - 1; j >= 1 && src[i + j] == pattern[j]; j--) ;
-                if (j == 0) return i;
-            }
-            return -1;
-        }
 
         // Create      
         // POST     /api/Books/createBook
@@ -134,20 +104,6 @@ namespace PDFUpload.Controllers.api
         }
 
 
-        // Post     /api/books/{id}/tag/{tagId}
-        [HttpPost("{bookId}/Tag/{tagId}")]
-        public async Task<IActionResult> CreateBookTag(int bookId, int tagId) // ova ke bide za sekoj nov tag koga ke sakam da go stavam
-        {
-            var bookTag = new BookTags()
-            {
-                TagId = tagId,
-                BookId = bookId
-            };
-            _repo.Add(bookTag);
-            await _repo.SaveAll();
-
-            return Ok("Tag,Saved");
-        }
 
 
 
@@ -159,9 +115,9 @@ namespace PDFUpload.Controllers.api
 
             List<Tag> Tags = new List<Tag>();
             Random rnd = new Random();
+            List<ViewTagModel> noDuplicateBookTags = bookTags.Distinct().ToList();
 
-
-            foreach (var tag in bookTags) // create the tag it its New (id != int) bidejki front ti vrakja id=tagName
+            foreach (var tag in noDuplicateBookTags) // create the tag it its New (id != int) bidejki front ti vrakja id=tagName
             {
                 int id;
                 if (!(int.TryParse(tag.id, out id)))
@@ -221,6 +177,20 @@ namespace PDFUpload.Controllers.api
 
 
 
+        // Post     /api/books/{id}/tag/{tagId}
+        [HttpPost("{bookId}/Tag/{tagId}")]
+        public async Task<IActionResult> CreateBookTag(int bookId, int tagId) // ova ke bide za sekoj nov tag koga ke sakam da go stavam
+        {
+            var bookTag = new BookTags()
+            {
+                TagId = tagId,
+                BookId = bookId
+            };
+            _repo.Add(bookTag);
+            await _repo.SaveAll();
+
+            return Ok("Tag,Saved");
+        }
 
 
 
@@ -390,6 +360,41 @@ namespace PDFUpload.Controllers.api
             return Ok("top");
             //return Content(najdenoVo);
         }
+
+
+        //api/books/searchin/4
+        [HttpGet("bytesearch/{id}")]
+        public async Task<IActionResult> SearchByByte(int id) //string filePath
+        {
+            var searchWord = "think";
+            var byteWord = Encoding.ASCII.GetBytes(searchWord);
+
+            var theBook = await _repo.GetBook(id);
+            var timesFound = Search(theBook.ByteBook, byteWord);
+
+            if (timesFound >= 1)
+            {
+                return Content("a word was found " + timesFound);
+            };
+
+
+
+            return Content("we didnt get a result");
+        }
+
+        int Search(byte[] src, byte[] pattern)
+        {
+            int c = src.Length - pattern.Length + 1;
+            int j;
+            for (int i = 0; i < c; i++)
+            {
+                if (src[i] != pattern[0]) continue;
+                for (j = pattern.Length - 1; j >= 1 && src[i + j] == pattern[j]; j--) ;
+                if (j == 0) return i;
+            }
+            return -1;
+        }
+
 
 
     }
