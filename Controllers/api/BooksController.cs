@@ -218,9 +218,9 @@ namespace PDFUpload.Controllers.api
 
         //api/books/allTags
         [HttpGet("allTags")]
-        public async Task<IActionResult> ReturnTags(string query) //string filePath
+        public async Task<IActionResult> ReturnTags(string q) //string filePath
         {
-            var allTags = await _repo.GetTags(query);
+            var allTags = await _repo.GetTags(q);
 
             return Ok(allTags);
         }

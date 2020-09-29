@@ -1,0 +1,226 @@
+﻿
+@{
+    ViewData["Title"] = "PdfCanva";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="//mozilla.github.io/pdf.js/build/pdf.js"></script>
+<h1>PdfCanva</h1>
+
+
+
+
+
+
+@*<canvas id="my_canvas"></canvas>*@
+<canvas id="the-canvas"></canvas>
+
+
+
+
+
+
+<base href="https://mozilla.github.io">
+
+@section scripts
+{
+    @*<script src="//mozilla.github.io/pdf.js/build/pdf.js"></script>*@
+
+    @*<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.5.207/build/pdf.min.js"></script>*@
+
+    <script type="text/javascript">
+        //const PDFStart = () => {
+        //console.log("hey");
+        //pdfjsLib.getDocument('../../book/hello2.pdf')
+        //    .then(doc => {
+        //        console.log("This file has " + doc._pdfInfo.numPages + " pages");
+        //    });
+        //}
+        ///////////////////////////////////////
+        ///////////////////////////////////////
+        //(async () => {
+
+        //    const loadingTask = pdfjsLib.getDocument("../book/hello2.pdf");
+        //    const pdf = await loadingTask.promise;
+
+        //    const page = await pdf.getPage(1);
+
+        //    const scale = 1;
+        //    const viewport = page.getViewport(scale);
+        //    const canvas = document.getElementById("my_canvas");
+        //    const context = canvas.getContext("2d");
+        //    canvas.height = viewport.height;
+        //    canvas.width = viewport.width;
+        //    const renderContext = {
+        //        canvasContext: context,
+        //        viewport: viewport
+        //    };
+        //    await page.render(renderContext);
+        //    console.log("Page rendered!");
+        //})();
+        ///////////////////////////////////////
+        ///////////////////////////////////////
+
+
+
+
+
+
+        ///////////////////////////////////////
+        ///////////////////////////////////////
+
+        //pdfjsLib.getDocument('hello2.pdf')
+
+        //var loadingTask = pdfjsLib.getDocument('hello2.pdf');
+        //loadingTask.promise.then(function (pdf) {
+        //    console.log("hey")
+
+        //    // you can now use *pdf* here
+        //    pdf.getPage(1).then(function (page) {
+
+        //        var scale = 1.5;
+        //        var viewport = page.getViewport({ scale: scale, });
+
+        //        var canvas = document.getElementById('my_canvas');
+        //        var context = canvas.getContext('2d');
+        //        canvas.height = viewport.height;
+        //        canvas.width = viewport.width;
+
+        //        var renderContext = {
+        //            canvasContext: context,
+        //            viewport: viewport
+        //        };
+        //        page.render(renderContext);
+        //        // you can now use *page* here
+        //    });
+
+        //});
+        ///////////////////////////////////////
+        ///////////////////////////////////////
+
+
+
+
+        /////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////
+        // If absolute URL from the remote server is provided, configure the CORS
+        // header on that server.
+        //
+        //var url = './hello2.pdf';
+
+        ////
+        //// The workerSrc property shall be specified.
+        ////
+        //pdfjsLib.GlobalWorkerOptions.workerSrc =
+        //    '../../node_modules/pdfjs-dist/build/pdf.worker.js';
+
+        ////
+        //// Asynchronous download PDF
+        ////
+        //var loadingTask = pdfjsLib.getDocument(url);
+        //loadingTask.promise.then(function (pdf) {
+        //    //
+        //    // Fetch the first page
+        //    //
+        //    pdf.getPage(1).then(function (page) {
+        //        var scale = 1.5;
+        //        var viewport = page.getViewport({ scale: scale, });
+
+        //        //
+        //        // Prepare canvas using PDF page dimensions
+        //        //
+        //        var canvas = document.getElementById('my_canvas');
+        //        var context = canvas.getContext('2d');
+        //        canvas.height = viewport.height;
+        //        canvas.width = viewport.width;
+
+        //        //
+        //        // Render PDF page into canvas context
+        //        //
+        //        var renderContext = {
+        //            canvasContext: context,
+        //            viewport: viewport,
+        //        };
+        //        page.render(renderContext);
+        //    });
+        //});
+
+        /////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////
+
+        //<script type="text/javascript">
+        // If absolute URL from the remote server is provided, configure the CORS
+        // header on that server.
+        //var url = 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf';
+        var url = './hello2.pdf';
+
+        // Loaded via <script> tag, create shortcut to access PDF.js exports.
+        var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+        // The workerSrc property shall be specified.
+        pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
+
+        // Asynchronous download of PDF
+        var loadingTask = pdfjsLib.getDocument(url);
+        loadingTask.promise.then(function (pdf) {
+            console.log('PDF loaded');
+
+            // Fetch the first page
+            var pageNumber = 1;
+            pdf.getPage(pageNumber).then(function (page) {
+                console.log('Page loaded');
+
+                var scale = 1.5;
+                var viewport = page.getViewport({ scale: scale });
+
+                // Prepare canvas using PDF page dimensions
+                var canvas = document.getElementById('the-canvas');
+                var context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                // Render PDF page into canvas context
+                var renderContext = {
+                    canvasContext: context,
+                    viewport: viewport
+                };
+                var renderTask = page.render(renderContext);
+                renderTask.promise.then(function () {
+                    console.log('Page rendered');
+                });
+            });
+        }, function (reason) {
+            // PDF loading error
+            console.error(reason);
+        });
+
+
+
+
+
+
+
+    </script>
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

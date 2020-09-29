@@ -60,20 +60,14 @@
     <script src="~/bootbox.js/bootbox.min.js"></script>
 
     <script type="text/javascript">
-
-
-
     $(document).ready(function () {
-
         var bookTags = [];
         var izbraniTagovi;
-
         //////////////// ne pipaj dole
         $('#tags').select2({
             ajax: {
                 //url: '/api/customers?query=%QUERY',
                 //  wildcard: '%QUERY'
-
                 url: '/api/books/allTags',
                 dataType: "json", // mozda treba jsonP ama proveri
                 data: function (params) {
@@ -96,7 +90,6 @@
                 },
             }
         });
-
         /// Nov Tag
         $("#btn-add-car").on("click", function () {
             var newStateVal = $("#new-car").val();
@@ -110,14 +103,8 @@
                 $("#tags").append(newState).trigger('change');
             }
         });
-
-
-
-
-
         ///////// newBook !!!!!!!
         $("#tagsButton").click(function () {
-
             izbraniTagovi = $('#tags').select2('data');
             $.each(izbraniTagovi, function (idx, item) {
                 bookTags.push(
@@ -128,11 +115,8 @@
                 );
             });
             console.log(bookTags);
-
             //bookTags = uniqBy(bookTags, it => it.id);
             var sendBookTags = JSON.stringify(bookTags);
-
-
                 $.ajax({
                     processData: false,
                     //contentType: false
@@ -150,14 +134,11 @@
                         $('#searchTable').append(trHTML);
                         bookTags = [];
                     },
-
                     error: function (e) {
                         console.log(e);
                     },
                 });
         });
-
-
          // filter if duplicate (long code but best performance)
             function uniq_fast(a) {
                 var seen = {};
@@ -173,15 +154,11 @@
                 }
                 return out;
             }
-
-
-
             function uniq(a) {
                 return a.sort().filter(function(item, pos, ary) {
                     return !pos || item != ary[pos - 1];
                 });
             }
-
         function uniqBy(a, key) {
     let seen = new Set();
     return a.filter(item => {
@@ -189,24 +166,6 @@
         return seen.has(k) ? false : seen.add(k);
     });
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         //// "U" for selected tagList
         $(window).keydown(function (event) { // U koga ke stisnes ke gi isprinta site IZBRANI tagovi
             if (event.keyCode == 85) {
@@ -215,8 +174,6 @@
                 console.log(izbraniTagovi)
             }
         });
-
-
         //////// Enter disable
         $(window).keydown(function (event) { // za Enter da ne ja submitne formata
             if (event.keyCode == 13) {
@@ -224,39 +181,12 @@
                 return false;
             }
         });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         //////////// Autocomplite
         var tagList = new Array();
         var vm = {};
         $("#tags").autocomplete({
             source: function (request, response) {
                 console.log(request.term)
-
                 $.ajax({
                     url: '/api/books/allTags', // @*@Url.Action("Search")*@
                     dataType: "json",
@@ -276,9 +206,7 @@
             minLength: 2,
             select: function (event, ui) {
                 $("#tags").empty();
-
                 tagList.push(ui.item.value);
-
                 $("#taglist").append("<li>" + ui.item.label + "<li>")
                 console.log("Selected: " + ui.item.value + " aka " + ui.item.label);
                 console.log("Selected: " + tagList);
@@ -287,14 +215,10 @@
                     //$.ajax({
                     //    url: "/api/"
                     //})
-
-
                 }
             }
         })
     });
     </script>
 }
-
-
 
