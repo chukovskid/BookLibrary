@@ -1,4 +1,5 @@
 ﻿using BookLibrary.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PDFUpload.Models;
 using PDFUpload.Repos;
@@ -17,35 +18,38 @@ namespace BookLibrary.Controllers
         }
 
 
+        public IFormFile nesto { get; set; }
+
+
+
 
         public async Task<IActionResult> Index()
         {
 
-            return View();
+            //var Books = _repo.GetBooks();
+
+
+
+            return View(); //Books
         }
 
         public async Task<IActionResult> Search()
         {
 
-            return View();
+            //var Books = _repo.GetBooks();
+
+
+
+            return View(); //Books
         }
-        public async Task<IActionResult> PdfCanva()
-        {
-
-            return View();
-        }
 
 
 
-        public async Task<IActionResult> New()
-        {
-            var repoTags = await _repo.GetTags(null);
-            var viewModel = new ViewBookModel
-            {
-                Tags = repoTags
-            };
-            return View(viewModel);
-        }
+
+
+
+
+
 
 
 
@@ -71,6 +75,7 @@ namespace BookLibrary.Controllers
                 IsNew = viewBook.IsNew
             };
 
+
             foreach (var tag in TagsForNewBoook)
             {
                 tag.ForNewBook = false;
@@ -83,22 +88,63 @@ namespace BookLibrary.Controllers
             }
             _repo.Add(newBook);
 
+
+            //_repo.SaveAll();
+
+            //var url = "https://localhost:44307/api/books/";
+            //return Redirect(url + newBook.Id);
             if (await _repo.SaveAll())
             {
+
                 var url = "https://localhost:44307/api/books/";
                 return Redirect(url + newBook.Id);
+
+
             }
 
             return Ok("Was not saved");
 
+            //var path = "D:/Employee_Report - Copy.pdf";
+            //Book viewBook = new Book()
+            //{
+            //    Author = "Dimitar C.",
+            //    FilePathToBook = "D:/Employee_Report - Copy.pdf",
+            //    ByteBook = System.IO.File.ReadAllBytes(path),
+            //    Title = "Employee_Report - Copy"
+
+            //};
+
+            // From File to Byte[]
+
+            // return new EmptyResult();
+            //return Ok();
+            // return new HttpStatusCodeResult(204);
 
         }
 
 
 
 
+        public async Task<IActionResult> New()
+        {
+            var repoTags = await _repo.GetTags(null);
+            var viewModel = new ViewBookModel
+            {
+                Tags = repoTags
+            };
+            //viewModel.Tags = new SelectList(repoTags, "Id", "TagName", 1);
+            return View(viewModel);
+        }
 
 
+
+
+        //public ActionResult Create(Book book)
+        //{
+
+
+        //    return View("CustomerForm", Book);
+        //}
 
 
 

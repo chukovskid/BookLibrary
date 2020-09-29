@@ -46,6 +46,11 @@
 
 
   <ItemGroup>
+    <Folder Include="book\" />
+  </ItemGroup>
+
+
+  <ItemGroup>
     <None Include="wwwroot\css\Typeahead.css" />
   </ItemGroup>
 
