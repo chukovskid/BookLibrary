@@ -250,48 +250,48 @@
 
 
 
-        //////////// Autocomplite
-        var tagList = new Array();
-        var vm = {};
-        $("#tags").autocomplete({
-            source: function (request, response) {
-                console.log(request.term)
+        ////////////// Autocomplite
+        //var tagList = new Array();
+        //var vm = {};
+        //$("#tags").autocomplete({
+        //    source: function (request, response) {
+        //        console.log(request.term)
 
-                $.ajax({
-                    url: '/api/books/allTags', // @*@Url.Action("Search")*@
-                    dataType: "json",
-                    data: {
-                        term: request.term
-                    },
-                    success: function (data) {
-                        response($.map(data, function (Tag) {
-                            return {
-                                label: Tag.tagName,
-                                value: Tag.id
-                            };
-                        }));
-                    }
-                });
-            },
-            minLength: 2,
-            select: function (event, ui) {
-                $("#tags").empty();
+        //        $.ajax({
+        //            url: '/api/books/allTags', // @*@Url.Action("Search")*@
+        //            dataType: "json",
+        //            data: {
+        //                term: request.term
+        //            },
+        //            success: function (data) {
+        //                response($.map(data, function (Tag) {
+        //                    return {
+        //                        label: Tag.tagName,
+        //                        value: Tag.id
+        //                    };
+        //                }));
+        //            }
+        //        });
+        //    },
+        //    minLength: 2,
+        //    select: function (event, ui) {
+        //        $("#tags").empty();
 
-                tagList.push(ui.item.value);
+        //        tagList.push(ui.item.value);
 
-                $("#taglist").append("<li>" + ui.item.label + "<li>")
-                console.log("Selected: " + ui.item.value + " aka " + ui.item.label);
-                console.log("Selected: " + tagList);
-                if (ui.item.value == null || ui.item.value == 0) { // ako nema Id odnosno ne postoi, kreiraj nov Tag
-                    console.log("stigna zborceto");
-                    //$.ajax({
-                    //    url: "/api/"
-                    //})
+        //        $("#taglist").append("<li>" + ui.item.label + "<li>")
+        //        console.log("Selected: " + ui.item.value + " aka " + ui.item.label);
+        //        console.log("Selected: " + tagList);
+        //        if (ui.item.value == null || ui.item.value == 0) { // ako nema Id odnosno ne postoi, kreiraj nov Tag
+        //            console.log("stigna zborceto");
+        //            //$.ajax({
+        //            //    url: "/api/"
+        //            //})
 
 
-                }
-            }
-        })
+        //        }
+        //    }
+        //})
     });
     </script>
 }

@@ -5,7 +5,7 @@ using PDFUpload.Models;
 using PDFUpload.Repos;
 using System.IO;
 using System.Threading.Tasks;
-
+using System.Web.Helpers;
 
 namespace BookLibrary.Controllers
 {
@@ -41,6 +41,14 @@ namespace BookLibrary.Controllers
 
 
             return View(); //Books
+        }
+        public async Task<IActionResult> PdfCanva()
+        {
+            var bookTry = await _repo.GetBook(649046);
+
+
+
+            return View(bookTry); //Books
         }
 
 
